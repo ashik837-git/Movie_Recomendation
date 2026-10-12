@@ -71,7 +71,30 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Root Health Endpoint
+# Root Info & Health Endpoints
+@app.get("/", tags=["system"])
+def root_info():
+    eng = movies.engine
+    return {
+        "platform": "CinePulse Algorithmic Movie Discovery & NLP Recommendation Platform",
+        "version": "1.0.0",
+        "status": "online",
+        "catalog_size": eng.catalog_size if eng else 0,
+        "frontend_url": "http://localhost:3000",
+        "api_docs_url": "/docs",
+        "health_check": "/health",
+        "api_v1_endpoints": {
+            "movies": "/api/v1/movies",
+            "popular": "/api/v1/popular",
+            "featured": "/api/v1/featured",
+            "genres": "/api/v1/genres",
+            "search": "/api/v1/search?q={query}",
+            "recommendations": "/api/v1/movies/{id}/similar",
+            "watchlist": "/api/v1/user/watchlist",
+            "plans": "/api/v1/payments/plans",
+        },
+    }
+
 @app.get("/health", status_code=status.HTTP_200_OK, tags=["system"])
 def health_check():
     eng = movies.engine

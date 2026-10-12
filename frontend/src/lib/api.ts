@@ -1,6 +1,14 @@
 import { Movie, PaginatedMovies, GenreItem, SubscriptionPlan } from "@/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
+const getBaseUrl = (): string => {
+  if (process.env.NEXT_PUBLIC_API_BASE_URL) {
+    return process.env.NEXT_PUBLIC_API_BASE_URL.replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined") {
+    return "/api/v1";
+  }
+  return "http://127.0.0.1:8000/api/v1";
+};
 
 class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -10,7 +18,8 @@ class ApiError extends Error {
 }
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const url = `${getBaseUrl()}${cleanEndpoint}`;
   try {
     const res = await fetch(url, {
       ...options,

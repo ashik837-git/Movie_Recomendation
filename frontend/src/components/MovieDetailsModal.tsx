@@ -38,7 +38,7 @@ export default function MovieDetailsModal({
     };
   }, [isOpen, onClose]);
 
-  // Fetch similar recommendations on movie change
+  // Fetch similar recommendations and watchlist status on movie change
   useEffect(() => {
     if (!movie) return;
     let isMounted = true;
@@ -58,10 +58,38 @@ export default function MovieDetailsModal({
         }
       });
 
+    // Check user watchlist state
+    const token = typeof window !== "undefined" ? (localStorage.getItem("cinepulse_token") || "mock_user_demo") : "mock_user_demo";
+    api
+      .getWatchlist(token)
+      .then((items) => {
+        if (isMounted) {
+          setInWatchlist(items.some((m) => m.id === movie.id));
+        }
+      })
+      .catch(() => {});
+
     return () => {
       isMounted = false;
     };
   }, [movie]);
+
+  const handleToggleWatchlist = async () => {
+    if (!movie) return;
+    const token = typeof window !== "undefined" ? (localStorage.getItem("cinepulse_token") || "mock_user_demo") : "mock_user_demo";
+    const nextState = !inWatchlist;
+    setInWatchlist(nextState);
+    try {
+      if (nextState) {
+        await api.addToWatchlist(movie.id, token);
+      } else {
+        await api.removeFromWatchlist(movie.id, token);
+      }
+    } catch {
+      // Revert if API fails
+      setInWatchlist(!nextState);
+    }
+  };
 
   if (!isOpen || !movie) return null;
 
@@ -133,7 +161,7 @@ export default function MovieDetailsModal({
             </button>
 
             <button
-              onClick={() => setInWatchlist(!inWatchlist)}
+              onClick={handleToggleWatchlist}
               className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl border font-semibold text-sm transition-all ${
                 inWatchlist
                   ? "bg-emerald-600/20 border-emerald-500 text-emerald-300"

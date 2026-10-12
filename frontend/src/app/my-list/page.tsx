@@ -34,6 +34,19 @@ export default function MyListPage() {
       });
   }, []);
 
+  const handleToggleWatchlist = async (movieId: number) => {
+    const token = typeof window !== "undefined" ? (localStorage.getItem("cinepulse_token") || "mock_user_demo") : "mock_user_demo";
+    const exists = watchlist.some((m) => m.id === movieId);
+    if (exists) {
+      setWatchlist((prev) => prev.filter((m) => m.id !== movieId));
+      try {
+        await api.removeFromWatchlist(movieId, token);
+      } catch (e) {
+        console.error("Failed to remove movie from watchlist:", e);
+      }
+    }
+  };
+
   return (
     <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
       <div className="border-b border-neutral-800 pb-4">
@@ -78,6 +91,7 @@ export default function MyListPage() {
               key={movie.id}
               movie={movie}
               isWatchlisted={true}
+              onToggleWatchlist={handleToggleWatchlist}
               onSelect={(m) => {
                 setSelectedMovie(m);
                 setIsDetailsOpen(true);

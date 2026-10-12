@@ -13,7 +13,9 @@ class Settings(BaseSettings):
     # Server configuration
     ENVIRONMENT: str = Field(default="development")
     PORT: int = Field(default=8000)
-    ALLOWED_ORIGINS: str = Field(default="http://localhost:3000,https://cinepulse.vercel.app")
+    ALLOWED_ORIGINS: str = Field(
+        default="http://localhost:3000,http://127.0.0.1:3000,http://localhost:8000,http://127.0.0.1:8000,https://cinepulse.vercel.app"
+    )
 
     # NLP Artifacts path
     ARTIFACTS_DIR: str = Field(default="backend/app/recommender/artifacts")

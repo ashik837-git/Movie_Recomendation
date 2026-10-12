@@ -1,0 +1,27 @@
+{
+  "name": "cinepulse-platform",
+  "version": "1.0.0",
+  "description": "Algorithmic Movie Discovery & NLP Recommendation Platform",
+  "private": true,
+  "scripts": {
+    "dev": "python run.py",
+    "dev:backend": "python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --app-dir backend --reload",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "python scripts/build_catalog.py && npm --prefix frontend run build",
+    "build:catalog": "python scripts/build_catalog.py",
+    "build:frontend": "npm --prefix frontend run build",
+    "test": "pytest -v",
+    "benchmark": "python scripts/evaluate.py",
+    "start": "python run.py"
+  },
+  "keywords": [
+    "movie-recommendation",
+    "nlp",
+    "fastapi",
+    "nextjs",
+    "cosine-similarity",
+    "scikit-learn"
+  ],
+  "author": "CinePulse Engineering",
+  "license": "MIT"
+}

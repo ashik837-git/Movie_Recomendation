@@ -95,59 +95,48 @@ Movie_Recommendation/
 
 ---
 
-## 3. Quick Start & Local Setup
+## 3. Quick Start & Unified Local Setup
 
 ### Prerequisites
 - Python 3.11+
 - Node.js 18+ (Node 20+ recommended)
 - Git
 
-### Step 1: Clone & Configure Environment
+### One-Command Unified Launch (Frontend + Backend + Chrome)
+CinePulse provides a unified industry-level orchestrator that boots the FastAPI NLP engine, Next.js frontend, verifies health, and launches Google Chrome automatically:
+
 ```bash
+# 1. Clone & enter repository
 git clone https://github.com/your-username/cinepulse.git
 cd cinepulse
-cp .env.example .env
-```
 
-### Step 2: Set Up Backend Virtual Environment
-```bash
-# Windows
-python -m venv backend/venv
-& "backend/venv/Scripts/pip.exe" install -r backend/requirements.txt
-
-# Linux / macOS
-python3 -m venv backend/venv
-source backend/venv/bin/activate
-pip install -r backend/requirements.txt
-```
-
-### Step 3: Build the NLP Catalog Artifacts
-If raw TMDB CSVs are not yet in `data/`, the build script automatically uses the verified synthetic test fixture (40 movies):
-```bash
-# Windows
-& "backend/venv/Scripts/python.exe" scripts/build_catalog.py
-
-# Linux / macOS
-python scripts/build_catalog.py
-```
-
-### Step 4: Run the Backend API
-```bash
-# Windows
-& "backend/venv/Scripts/uvicorn.exe" backend.app.main:app --reload --port 8000
-
-# Linux / macOS
-uvicorn backend.app.main:app --reload --port 8000
-```
-Visit the interactive Swagger API documentation at: [http://localhost:8000/docs](http://localhost:8000/docs)
-
-### Step 5: Run the Next.js Frontend
-```bash
-cd frontend
-npm install
+# 2. Run the unified platform (Windows / Linux / macOS)
 npm run dev
+# OR:
+python run.py
+# OR on Windows (double-click or run):
+run.bat
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+The unified orchestrator automatically:
+1. Verifies/builds NLP sparse feature vectors (`backend/app/recommender/artifacts/catalog_nlp_bundle.joblib`).
+2. Starts the FastAPI backend on `http://127.0.0.1:8000` and validates the `/health` endpoint.
+3. Starts the Next.js frontend on `http://localhost:3000` with automated reverse-proxying.
+4. Opens Google Chrome to `http://localhost:3000`.
+5. Gracefully terminates all services on `Ctrl+C`.
+
+---
+
+### Separate Service Commands (Optional Monorepo Scripts)
+
+You can also run or build individual subsystems from the root:
+```bash
+npm run dev:backend    # Runs FastAPI uvicorn server on port 8000
+npm run dev:frontend   # Runs Next.js dev server on port 3000
+npm run build          # Builds NLP artifacts and production frontend bundle
+npm test               # Runs pytest suite across recommendation and API contracts
+npm run benchmark      # Measures offline latency (p50/p95) and diversity metrics
+```
 
 ---
 
